@@ -10,6 +10,10 @@
 
     <!--Description-->
     
+        <meta name="description" content="手撸 opcode[TOC]
+前言自己立的 flag，哭着也要完成不是，见上一篇文章 极客巅峰2021 web opcode，还是以这个题为例 opcode.tar.gz，在禁用了 R 指令的情况下绕过 find_class 黑名单的限制
+推荐一篇文章 pickle反序列化初探 - 先知社区 (al">
+    
 
     <!--Author-->
     
@@ -140,17 +144,14 @@
     <div class="logo">
         <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
-            <h1 id="main-title" class="title">y0un9er's blog</h1>
-        
     </div>
 </header>
 
         <section class="main">
             
-                
 <div class="post">
 
-    <div class="post-header index">
+    <div class="post-header">
         <h1 class="title">
             <a href="/2021/08/15/%E6%89%8B%E6%92%B8opcode/">
                 Untitled
@@ -165,9 +166,13 @@
         </div>
     </div>
 
-    
-        <div class="content">
-            <h1 id="手撸-opcode"><a href="#手撸-opcode" class="headerlink" title="手撸 opcode"></a>手撸 opcode</h1><p>[TOC]</p>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h1 id="手撸-opcode"><a href="#手撸-opcode" class="headerlink" title="手撸 opcode"></a>手撸 opcode</h1><p>[TOC]</p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自己立的 flag，哭着也要完成不是，见上一篇文章 <a target="_blank" rel="noopener" href="https://blog.csdn.net/CSDNiamcoming/article/details/119284636?spm=1001.2014.3001.5501">极客巅峰2021 web opcode</a>，还是以这个题为例 <a target="_blank" rel="noopener" href="https://download.csdn.net/download/CSDNiamcoming/20668182">opcode.tar.gz</a>，在禁用了 R 指令的情况下绕过 find_class 黑名单的限制</p>
 <p>推荐一篇文章 <a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7436">pickle反序列化初探 - 先知社区 (aliyun.com)</a>，真的写得太详细了，师傅很贴心的用了动图给我们观察栈的变化，还有每个指令的详细介绍，认真看完手撸完全不是问题</p>
 <p>我这里主要是记录一下自己所学，完成 <strong>在禁用了 R 指令的情况下绕过 find_class 黑名单限制</strong> 的 payload，所以只着重介绍了一下 R、i、o 指令的用法，其他详细的 opcode 编写方法，还是请阅读推荐文章</p>
@@ -307,109 +312,20 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在学习过程中，发现手写的 opcode 真的可以干很多事儿，师傅们总结得已经很到位了，我这里就不献丑了</p>
 <p>学习之前我还在想，没有 R 指令是不是不可以绕过，为什么题目不考，网上也没找到文章，学习之后发现，R 指令能做到的，i、o 指令都能做到                                                     </p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/14/page/">
-                [object Object]
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-14</span>
-            
-            
-            
-        </div>
     </div>
 
     
-        <div class="content">
-            
-        </div>
+
+    
+
+    <!-- Comments -->
     
 
 </div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/14/post/">
-                [object Object]
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-14</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/14/hello-world/">
-                Hello World
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-14</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-        </div>
-    
-
-</div>
-            
         </section>
+
     </div>
 </div>
-
-
-
-
 
 
 </div>
