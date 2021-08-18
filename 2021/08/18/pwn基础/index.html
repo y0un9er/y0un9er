@@ -10,6 +10,16 @@
 
     <!--Description-->
     
+        <meta name="description" content="pwn 基础[toc]
+
+汇编基础重点​    各寄存器的作用
+​    常用汇编指令的使用
+​    各寄存器的作用
+笔记​    主流操作系统中，都是以字节（B）为寻址单位
+​    计算机真正能运行的是二进制形式的机器码，一般以16进制呈现
+​    汇编语言就是机器码的助记符
+​    通用">
+    
 
     <!--Author-->
     
@@ -18,7 +28,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="一个 ctfer 的小杂记"/>
+        <meta property="og:title" content="pwn基础"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +39,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -43,7 +53,7 @@
 
     <!-- Title -->
     
-    <title>一个 ctfer 的小杂记</title>
+    <title>pwn基础 - 一个 ctfer 的小杂记</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -163,411 +173,14 @@
     <div class="logo">
         <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
-            <h1 id="main-title" class="title">一个 ctfer 的小杂记</h1>
-        
     </div>
 </header>
 
         <section class="main">
             
-                
 <div class="post">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/18/%E6%A0%88/">
-                栈题基础
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-18</span>
-            
-            
-                <a href="https://y0un9er.github.io/2021/08/18/%E6%A0%88/#disqus_thread" class="comments article-comment-link">Comments</a>
-            
-            
-                <span class="category">
-                    <a href="/categories/web狗的pwn生之路/">web狗的pwn生之路</a>
-                </span>
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="一、栈溢出"><a href="#一、栈溢出" class="headerlink" title="一、栈溢出"></a>一、栈溢出</h2><h3 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h3><p>​        了解栈溢出的原理</p>
-<p>​        理清栈生长方向和溢出方向</p>
-<p>​        了解几种基本的栈溢出利用方式</p>
-<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><p>​        函数中存储在栈中的局部变量数组边界检查不严格发生越界写，造成用户输入覆盖到缓冲区以外的数据</p>
-<p>​        由于栈中同时存储着与函数调用参数相关信息，栈溢出可以导致控制流劫持</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">80</span>];</span><br><span class="line">    read(<span class="number">0</span>, buf, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">return</span>    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​        func 中 buf 的长度为 80，但是可以输入 200 长度的数据，所以存在栈溢出漏洞</p>
-<p>​        <strong>栈由高地址向低地址生长，buf 由低地址向高地址存储</strong>，所以栈溢出可以劫持函数的返回地址</p>
-<p>​        <img src="/images/pwn/stack/1.png" alt="image-20210817101803362"></p>
-<p>​        栈溢出基本 payload 构造：</p>
-<p>​            <code>buf 到 rbp 长度的数据 + 一个栈的长度（rbp）+ 要跳转的地址</code></p>
-<p>​        一般不需要构造 rbp，rbp 是程序用来定位栈中的局部变量的，除非涉及到 rbp 寄存器传递参数，一般 ROP 不需要管 rbp</p>
-<p>​        基本利用方式：</p>
-<p>​            ret2text：</p>
-<p>​                程序中存在后门函数，可以直接修改返回地址为后门函数的地址</p>
-<p>​            ret2shellcode：</p>
-<p>​                程序中没有可利用的后门，但是有可写可执行的段，就可以将 shellcode 写入该段，然后将程序劫持到 shellcode</p>
-<p>​            ret2libc：</p>
-<p>​                如果拿到了 libc 中函数的地址，就可以直接调用 libc 中的函数</p>
-<blockquote>
-<p>​    比如通过 puts_plt(puts_got)，拿到 puts 在 libc 中的真实地址</p>
-<p>​    然后通过 puts 的真实地址 减去 puts 在 libc 中的偏移地址 得到 libc 的基地址</p>
-<p>​    通过 system 在 libc 的偏移地址 加上 libc 的基地址 就可以得到 system 的真实地址，用来调用 system</p>
-</blockquote>
-<p>​            ret2syscall：</p>
-<p>​                把 rax 值设为系统调用表中函数对应的系统号，然后执行 syscall</p>
-<p>​                <img src="/images/pwn/stack/2.png" alt="image-20210818100116870"></p>
-<hr>
-<h2 id="二、rop介绍与编写"><a href="#二、rop介绍与编写" class="headerlink" title="二、rop介绍与编写"></a>二、rop介绍与编写</h2><h3 id="重点-1"><a href="#重点-1" class="headerlink" title="重点"></a>重点</h3><p>​    了解什么是 gadget</p>
-<p>​    了解通用 ROP 的使用</p>
-<p>​    了解栈转移的方式</p>
-<h3 id="知识点-1"><a href="#知识点-1" class="headerlink" title="知识点"></a>知识点</h3><p>​    ROP 全称 Return Oriented Programming，即返回导向编程，以一堆 ret 来完成代码逻辑，这些 ret 称之为 gadget</p>
-<p>​    gadget 的寻找</p>
-<p>​        ropper</p>
-<p>​            ropper –file filename</p>
-<p>​            ropprer –file filename –search “str”</p>
-<p>​        ROPgadget</p>
-<p>​            ROPgadget –binary filename</p>
-<p>​            ROPgadget –binary filename –string “str”</p>
-<p>​    通用 ROP</p>
-<p>​        利用 x64 下的 __libc_csu_init 中的 gadget</p>
-<p>​        __libc_csu_init 是对 libc 进行初始化操作的，如果程序调用了 libc，这个函数就会存在</p>
-<p>​    </p>
-<p>​        利用逻辑：</p>
-<p>​            函数中存在 pop rbx、rbp、r12-15 然后 ret 的指令，意味着我们可以控制这6个寄存器</p>
-<p>​            同时函数中存在将 r13 赋值给 rdx，r14 赋值给 rsi，r15 赋值给 edi 再 call r12+rbx*8 这样的指令</p>
-<p>​            所以控制了 rbx、rbp、r12-15 就能调用任意函数了</p>
-<p>​    限制了溢出长度的思路：</p>
-<p>​        思路一：</p>
-<p>​            寻找 one_gadget （能直接获取 shell 的指令）</p>
-<p>​            工具</p>
-<p>​                one_gadget </p>
-<p>​                    安装方式：<br>​                        apt install ruby</p>
-<p>​                        gem install one_gadget</p>
-<p>​                    使用方式：</p>
-<p>​                        one_gadget libc.so</p>
-<p>​        思路二：</p>
-<p>​            通过 pop ret 使 rsp 跑到可溢出区域外，即栈转移</p>
-<p>​            转移到 bss 或者堆上我们提前布置好的 ROP 链开头，可以通过 mov rsp rax; ret 或者 pop rsp; ret，但实际情况下及其少见</p>
-<p>​            方式一：（算上 rbp 和返回地址共 32 字节，只需溢出 16 字节）<br>​                <code>pop rbp; ret  +  leave; ret</code></p>
-<p>​                rop 构造：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pop rbp; ret</span><br><span class="line"></span><br><span class="line">target stack address</span><br><span class="line"></span><br><span class="line">leave; ret</span><br></pre></td></tr></table></figure>
-
-<p>​            方式二：（总 24 字节，只需溢出 8 字节）</p>
-<p>​                通过两次 leave; ret</p>
-<p>​                rop 构造：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">target stack address</span><br><span class="line">leave; ret</span><br><span class="line">leave; ret</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="/images/pwn/stack/3.png" alt="image-20210817111812313"></p>
-<hr>
-<h2 id="三、改写-got-表-getshell"><a href="#三、改写-got-表-getshell" class="headerlink" title="三、改写 got 表 getshell"></a>三、改写 got 表 getshell</h2><h3 id="重点-2"><a href="#重点-2" class="headerlink" title="重点"></a>重点</h3><p>​    理解能修改 got 表调用其他函数的原因</p>
-<p>​    了解修改 got 表的方式</p>
-<h3 id="知识点-2"><a href="#知识点-2" class="headerlink" title="知识点"></a>知识点</h3><p>​    根据 elf 文件的延迟绑定机制可知，程序调用函数都是通过访问 got 表</p>
-<p>​    将本来要执行的函数的 got 表存储的地址改为 systen 的地址，则执行该函数的时候会执行 system</p>
-<p>​    常见用来劫持 got 表的函数，这些函数的参数一般都为用户可控</p>
-<p>​        puts(buf)</p>
-<p>​        atoi(buf)、atoi(buf)</p>
-<p>​        free(buf)</p>
-<p>​    修改 got 表的方式</p>
-<p>​        通过 ROP，不过一般能利用 ROP 的程序不需要修改 got 表</p>
-<p>​        任意地址写</p>
-<p>​        bss 段负溢出（bss 段在 got 表下方的不远处）</p>
-<h2 id="四、栈题思路"><a href="#四、栈题思路" class="headerlink" title="四、栈题思路"></a>四、栈题思路</h2><h3 id="重点-3"><a href="#重点-3" class="headerlink" title="重点"></a>重点</h3><p>​    了解栈题的解题思路</p>
-<h3 id="知识点-3"><a href="#知识点-3" class="headerlink" title="知识点"></a>知识点</h3><p>​    第一步：查看文件信息（架构、32位或64位、动态编译或静态编译）</p>
-<p>​        file filename</p>
-<p>​        checksec filename</p>
-<p>​            关闭了 canary 的大概率是栈题</p>
-<p>​            开启 PIE 的要找到地址泄露的地方</p>
-<p>​            开启 FULL RELRO 的思路就应该不是改写 got</p>
-<p>​    第二步：分析程序逻辑</p>
-<p>​        直接运行程序</p>
-<p>​        丢进 ida 进行静态分析</p>
-<p>​            把函数名、变量搞懂</p>
-<p>​            如果有结构体，要先建立结构体</p>
-<p>​    第三步：寻找漏洞</p>
-<p>​        危险函数：gets、read、write、free、printf</p>
-<p>​        如果程序有自己封装的 input 函数，重点分析有没有越界</p>
-<p>​        看输入数据是如何处理的</p>
-<p>​        对内存拷贝等函数要格外注意</p>
-<p>​    第四步：漏洞利用</p>
-<p>​        与程序逻辑和保护机制息息相关</p>
-<p>​        需要处理的问题</p>
-<p>​            地址问题</p>
-<p>​                exp 离不开函数地址和 gadgets 地址</p>
-<p>​                开启 PIE 和 ASLR，需要想办法泄露地址，泄露方法一般是让程序打印出来一些脏数据或者函数地址</p>
-<p>​                程序基地址、堆地址、libc 基地址、栈地址并不相关</p>
-<p>​            canary 和 NX</p>
-<p>​                如果确认是栈题，通常考虑泄露或者修改canary</p>
-<p>​                没有开 NX 的题，通常考虑写 shellcode</p>
-<p>​                使用 mprotect 逃过 NX 的限制</p>
-<p>​            程序本身限制（根据具体情况）</p>
-<p>​                gadget 种类少</p>
-<p>​                输入的字符有限制</p>
-<p>​                栈溢出的字节不够</p>
-<p>​        </p>
-<p>​        </p>
-
-        </div>
-    
-
-</div>
-
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/18/%E6%A0%882/">
-                栈
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-18</span>
-            
-            
-                <a href="https://y0un9er.github.io/2021/08/18/%E6%A0%882/#disqus_thread" class="comments article-comment-link">Comments</a>
-            
-            
-                <span class="category">
-                    <a href="/categories/web狗的pwn生之路/">web狗的pwn生之路</a>
-                </span>
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h1 id="《web狗的pwn生之路》系列文章目录"><a href="#《web狗的pwn生之路》系列文章目录" class="headerlink" title="《web狗的pwn生之路》系列文章目录"></a>《web狗的pwn生之路》系列文章目录</h1><p><font color=#999AAA ><a href="#">第一章 pwn 入门基础</a></p>
-<p><font color=#999AAA >第二章 pwn 栈题基础</p>
-<p><font color=#999AAA >待更新…………</p>
-<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
-
-<p>@<a href="%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95">TOC</a></p>
-<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
-
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>感觉没有题目的支撑，写得再多也很范范。多刷刷题再回来看这篇文章应该会有不一样的收获</p>
-<p>师傅说格式化字符串漏洞太老了，没有讲，所以没有笔记，以后有机会补充一点</p>
-<p>然后栈还有一些其他有意思的操作，比如说低版本的 gcc 编译的程序发生栈溢出报错回显示程序名，所以可以覆盖 argv[0]（main 函数的参数，程序名），泄露信息，知识面有限，以后再慢慢补充</p>
-<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
-
-
-<h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="一、栈溢出"><a href="#一、栈溢出" class="headerlink" title="一、栈溢出"></a>一、栈溢出</h2><h3 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h3><pre><code>了解栈溢出的原理
-
-理清栈生长方向和溢出方向
-
-了解几种基本的栈溢出利用方式
-</code></pre>
-<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><pre><code>函数中存储在栈中的局部变量数组边界检查不严格发生越界写，造成用户输入覆盖到缓冲区以外的数据
-
-由于栈中同时存储着与函数调用参数相关信息，栈溢出可以导致控制流劫持
-</code></pre>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">80</span>];</span><br><span class="line">    read(<span class="number">0</span>, buf, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">return</span>    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<pre><code>func 中 buf 的长度为 80，但是可以输入 200 长度的数据，所以存在栈溢出漏洞
-</code></pre>
-<p><strong>栈由高地址向低地址生长，buf 由低地址向高地址存储</strong>，所以栈溢出可以劫持函数的返回地址</p>
-<p>​        <img src="/images/pwn/stack/1.png"></p>
-<p>​        栈溢出基本 payload 构造：</p>
-<p>​            <code>buf 到 rbp 长度的数据 + 一个栈的长度（rbp）+ 要跳转的地址</code></p>
-<pre><code>一般不需要构造 rbp，rbp 是程序用来定位栈中的局部变量的，除非涉及到 rbp 寄存器传递参数，一般 ROP 不需要管 rbp
-</code></pre>
-<p>​    基本利用方式：</p>
-<blockquote>
-<p>ret2text：</p>
-<p>程序中存在后门函数，可以直接修改返回地址为后门函数的地址<br><br>ret2shellcode：</p>
-<p>程序中没有可利用的后门，但是有可写可执行的段，就可以将 shellcode 写入该段，然后将程序劫持到 shellcode<br><br>ret2libc：</p>
-<p>如果拿到了 libc 中函数的地址，就可以直接调用 libc 中的函数</p>
-<pre><code>       比如通过 puts_plt(puts_got)，拿到 puts 在 libc 中的真实地址
-
-       然后通过 puts 的真实地址 减去 puts 在 libc 中的偏移地址 得到 libc 的基地址
-       
-       通过 system 在 libc 的偏移地址 加上 libc 的基地址 就可以得到 system 的真实地址，用来调用 system
-</code></pre>
-<p>ret2syscall：</p>
-<p>​                把 rax 值设为系统调用表中函数对应的系统号，然后执行 syscall</p>
-<p>​<br><img src="/images/pwn/stack/2.png" alt="img"></p>
-</blockquote>
-<hr>
-<h2 id="二、rop介绍与编写"><a href="#二、rop介绍与编写" class="headerlink" title="二、rop介绍与编写"></a>二、rop介绍与编写</h2><h3 id="重点-1"><a href="#重点-1" class="headerlink" title="重点"></a>重点</h3><pre><code>了解什么是 gadget
-
-了解通用 ROP 的使用
-    
-了解栈转移的方式
-</code></pre>
-<h3 id="知识点-1"><a href="#知识点-1" class="headerlink" title="知识点"></a>知识点</h3><pre><code>ROP 全称 Return Oriented Programming，即返回导向编程，以一堆 ret 来完成代码逻辑，这些 ret 称之为 gadget
-</code></pre>
-<p>​    gadget 的寻找</p>
-<pre><code>ropper
-
-​    ropper --file filename
-
-​    ropprer --file filename --search &quot;str&quot;
-
-ROPgadget
-
-​    ROPgadget --binary filename
-
-​    ROPgadget --binary filename --string &quot;str&quot;
-</code></pre>
-<p>​    通用 ROP</p>
-<pre><code>利用 x64 下的 __libc_csu_init 中的 gadget
-</code></pre>
-<p>__libc_csu_init 是对 libc 进行初始化操作的，如果程序调用了 libc，这个函数就会存在</p>
-<pre><code>​    
-</code></pre>
-<p>利用逻辑：</p>
-<pre><code>​    函数中存在 pop rbx、rbp、r12-15 然后 ret 的指令，意味着我们可以控制这6个寄存器
-
-​    同时函数中存在将 r13 赋值给 rdx，r14 赋值给 rsi，r15 赋值给 edi 再 call r12+rbx*8 这样的指令
-
-​    所以控制了 rbx、rbp、r12-15 就能调用任意函数了
-</code></pre>
-<p>​    限制了溢出长度的思路：</p>
-<pre><code>思路一：寻找 one_gadget （能直接获取 shell 的指令）
-
-​    工具
-
-​        one_gadget 
-
-​            安装方式：
-​                apt install ruby
-
-​                gem install one_gadget
-
-​            使用方式：
-
-​                one_gadget libc.so
-
-
-思路二：通过 pop ret 使 rsp 跑到可溢出区域外，即栈转移
-
-转移到 bss 或者堆上我们提前布置好的 ROP 链开头，可以通过 mov rsp rax; ret 或者 pop rsp; ret，但实际情况下及其少见
-
-    方式一：（算上 rbp 和返回地址共 32 字节，只需溢出 16 字节）
-        pop rbp; ret  +  leave; ret
-
-​        rop 构造：
-
-            pop rbp; ret
-    
-            target stack address
-    
-            leave; ret
-
-​    方式二：（总 24 字节，只需溢出 8 字节）
-
-​        通过两次 leave; ret
-
-​        rop 构造：
-
-            target stack address
-            
-            leave; ret
-            
-            leave; ret
-</code></pre>
-<p>两次 leave; ret 的栈布局<br><img src="/images/pwn/stack/3.png" alt="在这里插入图片描述"></p>
-<hr>
-<h2 id="三、改写-got-表-getshell"><a href="#三、改写-got-表-getshell" class="headerlink" title="三、改写 got 表 getshell"></a>三、改写 got 表 getshell</h2><h3 id="重点-2"><a href="#重点-2" class="headerlink" title="重点"></a>重点</h3><pre><code>理解能修改 got 表调用其他函数的原因
-
-了解修改 got 表的方式
-</code></pre>
-<h3 id="知识点-2"><a href="#知识点-2" class="headerlink" title="知识点"></a>知识点</h3><pre><code>根据 elf 文件的延迟绑定机制可知，程序调用函数都是通过访问 got 表
-
-将本来要执行的函数的 got 表存储的地址改为 systen 的地址，则执行该函数的时候会执行 system
-</code></pre>
-<p>​    常见用来劫持 got 表的函数，这些函数的参数一般都为用户可控</p>
-<pre><code>​    puts(buf)
-
-​    atoi(buf)、atoi(buf)
-
-​    free(buf)
-</code></pre>
-<p>​    修改 got 表的方式</p>
-<pre><code>​    通过 ROP，不过一般能利用 ROP 的程序不需要修改 got 表
-
-​    任意地址写
-
-​    bss 段负溢出（bss 段在 got 表下方的不远处）
-</code></pre>
-<h2 id="四、栈题思路"><a href="#四、栈题思路" class="headerlink" title="四、栈题思路"></a>四、栈题思路</h2><h3 id="重点-3"><a href="#重点-3" class="headerlink" title="重点"></a>重点</h3><pre><code> 了解栈题的解题思路
-</code></pre>
-<h3 id="知识点-3"><a href="#知识点-3" class="headerlink" title="知识点"></a>知识点</h3><p>​    第一步：查看文件信息（架构、32位或64位、动态编译或静态编译）</p>
-<pre><code>file filename 
-
-checksec filename
-    关闭了 canary 的大概率是栈题 
-    
-    开启 PIE 的要找到地址泄露的地方
-    
-    开启 FULL RELRO 的思路就应该不是改写 got
-</code></pre>
-<p>​    第二步：分析程序逻辑</p>
-<pre><code>​直接运行程序
-
-丢进 ida 进行静态分析
-
-​    把函数名、变量搞懂
-
-​    如果有结构体，要先建立结构体
-</code></pre>
-<p>​    第三步：寻找漏洞</p>
-<pre><code>​危险函数：gets、read、write、free、printf
-
-​如果程序有自己封装的 input 函数，重点分析有没有越界
-
-​看输入数据是如何处理的
-
-​对内存拷贝等函数要格外注意
-</code></pre>
-<p>​    第四步：漏洞利用</p>
-<blockquote>
-<p>与程序逻辑和保护机制息息相关<br><br>   需要处理的问题<br><br><br>   地址问题</p>
-<pre><code>        exp 离不开函数地址和 gadgets 地址
-
-       开启 PIE 和 ASLR，需要想办法泄露地址，泄露方法一般是让程序打印出来一些脏数据或者函数地址
-
-       程序基地址、堆地址、libc 基地址、栈地址并不相关
-</code></pre>
-<p><br>​            canary 和 NX</p>
-<pre><code>   如果确认是栈题，通常考虑泄露或者修改canary
-
-    没有开 NX 的题，通常考虑写 shellcode
-
-    使用 mprotect 逃过 NX 的限制
-</code></pre>
-<p><br>​            程序本身限制（根据具体情况分析）</p>
-<pre><code>   gadget 种类少
-
-    输入的字符有限制
-
-    栈溢出的字节不够
-</code></pre>
-</blockquote>
-<p>​        </p>
-<p>​        </p>
-
-        </div>
-    
-
-</div>
-
-            
-                
-<div class="post">
-
-    <div class="post-header index">
+    <div class="post-header">
         <h1 class="title">
             <a href="/2021/08/18/pwn%E5%9F%BA%E7%A1%80/">
                 pwn基础
@@ -578,8 +191,6 @@ checksec filename
                 <span class="date">2021-08-18</span>
             
             
-                <a href="https://y0un9er.github.io/2021/08/18/pwn%E5%9F%BA%E7%A1%80/#disqus_thread" class="comments article-comment-link">Comments</a>
-            
             
                 <span class="category">
                     <a href="/categories/web狗的pwn生之路/">web狗的pwn生之路</a>
@@ -588,9 +199,13 @@ checksec filename
         </div>
     </div>
 
-    
-        <div class="content">
-            <h1 id="pwn-基础"><a href="#pwn-基础" class="headerlink" title="pwn 基础"></a>pwn 基础</h1><p>[toc]</p>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h1 id="pwn-基础"><a href="#pwn-基础" class="headerlink" title="pwn 基础"></a>pwn 基础</h1><p>[toc]</p>
 <hr>
 <h2 id="汇编基础"><a href="#汇编基础" class="headerlink" title="汇编基础"></a>汇编基础</h2><h3 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h3><p>​    各寄存器的作用</p>
 <p>​    常用汇编指令的使用</p>
@@ -1064,48 +679,27 @@ checksec filename
 
 
 
-        </div>
-    
-
-</div>
-
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/08/18/images/">
-                images
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-08-18</span>
-            
-            
-                <a href="https://y0un9er.github.io/2021/08/18/images/#disqus_thread" class="comments article-comment-link">Comments</a>
-            
-            
-        </div>
     </div>
 
     
-        <div class="content">
-            
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/pwn/">#pwn</a>
         </div>
+    
+
+    <!-- Comments --> 
+    
     
 
 </div>
 
-            
         </section>
+
     </div>
 </div>
-
-
-
-
 
 
 </div>

@@ -66,9 +66,34 @@
 <link rel="stylesheet" href="/css/style.css">
 
 
+    
+<link rel="stylesheet" href="/css/searchbox.css">
+
+
+    
+<link rel="stylesheet" href="/css/iframe.css">
+
+
+    <style>
+        sh{
+	    position: fixed;
+	    right: 3.5em;
+	    top: 2em;
+	    z-index: 10000;
+
+	}
+    </style>
+
     <!-- Google Analytics -->
     
 
+
+    <script type="text/javascript">
+	document.getElementById('search-ico').onclick = function () {
+		document.getElementById('vomnibar').style.display = 'block'
+		document.getElementById('a').click()
+	}
+    </script>
 
 <meta name="generator" content="Hexo 5.4.0"></head>
 
@@ -119,9 +144,13 @@
 </div>
 
 <!--Hamburger Icon-->
+<sh>
+    <img src="/img/search.svg" id="search-ico" />
+</sh>
 <nav>
     <a href="#menu"></a>
 </nav>
+
 
 <div class="container">
 
@@ -142,8 +171,8 @@
             <section class="main archive-container">
                 
                         <div class="archive-post">
-    <a href="/tags/test/">
-        #test
+    <a href="/tags/pwn/">
+        #pwn
     </a>
 </div>
                 
@@ -173,19 +202,19 @@
         <ul>
             
             <li>
-                <a class="footer-post" href="/2021/08/15/hello-world10/">Hello World</a>
+                <a class="footer-post" href="/2021/08/18/%E6%A0%88/">栈题基础</a>
             </li>
             
             <li>
-                <a class="footer-post" href="/2021/08/15/world/">World</a>
+                <a class="footer-post" href="/2021/08/18/%E6%A0%882/">栈</a>
             </li>
             
             <li>
-                <a class="footer-post" href="/2021/08/15/hello-world0/">Hello World</a>
+                <a class="footer-post" href="/2021/08/18/pwn%E5%9F%BA%E7%A1%80/">pwn基础</a>
             </li>
             
             <li>
-                <a class="footer-post" href="/2021/08/15/hello-world9/">Hello World</a>
+                <a class="footer-post" href="/2021/08/18/images/">images</a>
             </li>
             
         </ul>
@@ -199,7 +228,7 @@
     <ul>
         
         <li>
-            <a class="footer-post" href="/categories/hi/">hi</a>
+            <a class="footer-post" href="/categories/web%E7%8B%97%E7%9A%84pwn%E7%94%9F%E4%B9%8B%E8%B7%AF/">web狗的pwn生之路</a>
         </li>
         
     </ul>
@@ -266,6 +295,7 @@
 </footer>
 
 
+
 <!-- After footer scripts -->
 
 <!-- jQuery -->
@@ -292,6 +322,31 @@
 <!-- Disqus Comments -->
 
 
+
+<div id="vomnibar" style="display: none">
+	<iframe scrolling="no" class="vomnibarFrame vimiumUIComponentVisible" name="searchIframe" src="/html/search.html"></iframe>
+</div>
+
+
+<script>
+	document.getElementById('search-ico').onclick = function () {
+		if ( document.getElementById('vomnibar').style.display == 'none'){
+			document.getElementById('vomnibar').style.display = 'block'
+		}else{
+			document.getElementById('vomnibar').style.display = 'none'
+			window.frames['searchIframe'].document.querySelector("#vomnibarInput").value = ''
+		}
+	}
+</script>
+
+<script>	
+	$(document).bind("click",function(e){
+		if($(e.target).closest("#vomnibar").length == 0 && $(e.target).closest("#search-ico").length == 0){
+			$("#vomnibar").hide()
+			window.frames['searchIframe'].document.querySelector("#vomnibarInput").value = ''
+		}
+	})		
+</script>
 
 </body>
 

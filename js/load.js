@@ -18,8 +18,8 @@ var isMobile = {
     return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
   }
 };
-if ($('.local-search').size() && !isMobile.any()) {
+if (!isMobile.any()) {
   $.getScript('/js/search.js', function() {
-    searchFunc("/search.xml", 'local-search-input', 'local-search-result');
+    searchFunc("/search.xml", 'vomnibarInput', 'local-search-result');
   });
 }

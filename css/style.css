@@ -35,7 +35,6 @@ a:link,
 a:visited,
 a:active {
   color: #d7ecff;
-  border-bottom: 1px dotted #d7ecff;
   cursor: pointer;
   transition: text-shadow 0.3s ease, border-bottom-color 0.5s ease;
   text-decoration: none;

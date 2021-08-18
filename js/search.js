@@ -1,5 +1,4 @@
 var searchFunc = function (path, search_id, content_id) {
-  var BTN = "<i id='local-search-close'>x</i>";
   $.ajax({
     url: path,
     dataType: "xml",
@@ -16,7 +15,7 @@ var searchFunc = function (path, search_id, content_id) {
       var $resultContent = document.getElementById(content_id);
 
       $input.addEventListener('input', function () {
-        var str = '<ul class=\"search-result-list\">';
+        var str = '<br />';
         var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
         $resultContent.innerHTML = "";
         if (this.value.trim().length <= 0) {
@@ -54,7 +53,7 @@ var searchFunc = function (path, search_id, content_id) {
             isMatch = false;
           }
           if (isMatch) {
-            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+            str += "<li><a href='" + data_url + "' class='search-result-title' target='_parent'>" + data_title + "</a>";
             var content = data.content.trim().replace(/<[^>]+>/g, "");
             if (first_occur >= 0) {
               var start = first_occur - 20;
@@ -84,11 +83,10 @@ var searchFunc = function (path, search_id, content_id) {
             str += "</li>";
           }
         });
-        str += "</ul>";
         if (str.indexOf('<li>') === -1) {
-          return $resultContent.innerHTML = BTN + "<ul><span class='local-search-empty'>没有找到内容，更换下搜索词试试吧~<span></ul>";
+          return $resultContent.innerHTML = "<ul><span class='local-search-empty'><br />没有找到内容，更换下搜索词试试吧~<br /><br /><span></ul>";
         }
-        $resultContent.innerHTML = BTN + str;
+        $resultContent.innerHTML = str;
       });
     }
   });
